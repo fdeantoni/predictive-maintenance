@@ -3,12 +3,9 @@ package com.example.machine
 import akka.Done
 import akka.actor._
 import akka.stream.ActorMaterializer
-import com.salesforce.kafka.test.{KafkaTestCluster, KafkaTestUtils}
-import org.apache.kafka.common.serialization.StringDeserializer
+import net.manub.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration._
-import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
 
 //noinspection TypeAnnotation
 object Simulator {
@@ -17,21 +14,18 @@ object Simulator {
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContext = system.dispatcher
 
-  val kafka = new KafkaTestCluster(1)
-  val kafkaUtils = new KafkaTestUtils(kafka)
+  implicit val kafkaonfig = EmbeddedKafkaConfig(kafkaPort = 9092, zooKeeperPort = 0)
 
   def main(args: Array[String]): Unit = {
 
-    kafka.start()
-    println("Kafka running at " + kafka.getKafkaConnectString)
+    EmbeddedKafka.start()
     Thread.sleep(1000)
-    kafkaUtils.createTopic("input", 1, 1)
-    kafkaUtils.createTopic("output", 1, 1)
-    println(kafkaUtils.describeClusterNodes().asScala)
+    EmbeddedKafka.createCustomTopic("input", Map.empty, 1, 1)
+    EmbeddedKafka.createCustomTopic("output", Map.empty, 1, 1)
 
     val machine = "Machine746"
     val csv = "../explore/build/machine_746.csv"
-    val brokers = kafka.getKafkaConnectString
+    val brokers = "localhost:9092"
 
     val stream = new RecordStream(machine, csv, brokers)
     val result = stream.start
@@ -42,7 +36,7 @@ object Simulator {
 
     CoordinatedShutdown(system)
       .addTask(CoordinatedShutdown.PhaseBeforeServiceUnbind, "shutdown") { () =>
-        kafka.stop()
+        EmbeddedKafka.stop()
         Future(Done)
       }
   }

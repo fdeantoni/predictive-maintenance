@@ -33,7 +33,7 @@ class KafkaProducer(brokers: String, system: ActorSystem) {
 
   val flow: Flow[Record, ProducerRecord[String, String], KillSwitch] = Flow[Record]
     .log("stream-kafka")
-    .mapAsync(10) { value =>
+    .mapAsync(1) { value =>
       Future.successful(new ProducerRecord[String, String](kafkaTopic, value.machine, value.toJson))
     }.viaMat(KillSwitches.single)(Keep.right)
 

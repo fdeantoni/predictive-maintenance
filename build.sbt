@@ -34,8 +34,7 @@ lazy val simulator = (project in file("simulator"))
       "com.typesafe.akka" %% "akka-stream" % "2.5.25",
       "com.typesafe.akka" %% "akka-stream-kafka" % "1.0.5",
       "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "1.1.1",
-      "com.salesforce.kafka.test" % "kafka-junit-core" % "3.1.1",
-      "org.apache.kafka" %% "kafka" % "2.1.1",
+      "io.github.embeddedkafka" %% "embedded-kafka" % "2.3.0",
       "ch.qos.logback" % "logback-classic" % "1.2.3"
     )
   )

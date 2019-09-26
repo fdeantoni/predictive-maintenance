@@ -16,7 +16,7 @@ class RecordStream(machine: String, csv: String, brokers: String)(implicit syste
   private val graph = RunnableGraph.fromGraph(GraphDSL.create(consumer.source) { implicit builder => input =>
     import GraphDSL.Implicits._
 
-    input ~> consumer.flow ~> kafka.flow.async ~> kafka.killSwitch ~> kafka.sink
+    input ~> consumer.flow ~> kafka.flow ~> kafka.killSwitch ~> kafka.sink
 
     ClosedShape
   })
