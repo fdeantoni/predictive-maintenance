@@ -70,4 +70,37 @@ Run the simulator as follows:
 
     $ sbt simulator/run
     
-                
+## Launch Spark Job
+
+Now that the simulator is running, we can launch the Spark streaming job to generate our maintenance predictions. We 
+will launch our job using `spark-submit`. Make sure you have [Spark 2.4.4](https://spark.apache.org/downloads.html) 
+installed. Submit the job as follows:
+
+    $ $SPARK_HOME/bin/spark-submit \
+        --class com.example.machine.Maintenance \
+        --master local[*] \
+        job/target/scala-2.11/job-assembly-1.0-SNAPSHOT.jar --models explore/build                 
+        
+*NOTE*: this job will create a `./checkpoint` folder. If restarting from scratch, make sure to remove this folder first 
+before starting the job again.
+
+*TIP*: To reduce logging by Spark, you may want to configure `$SPARK_HOME/conf/logging.properties` with the following to 
+reduce the amount of logs generated:
+    
+    log4j.logger.org.apache.spark=ERROR
+    log4j.logger.com.example=DEBUG
+    
+If your Spark installation does not have a `logging.properties` file yet, create one from the template and add the above
+lines to it.    
+
+With the Spark job running you should now see the predictions that come with the machine data as it is received.
+
+## Some Comments
+
+This is of course a toy project that makes predictions on the same data on which the model was created (i.e. our
+simulator is sending the same data we used for learning). This means the predictions are of course near perfect. 
+
+Nonetheless, it does demonstrate how all the different pieces fit together. It shows how you can generate an XGBoost 
+model in R, and then use that model directly in Spark Streaming. 
+
+            
