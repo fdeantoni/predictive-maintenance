@@ -12,6 +12,7 @@ class CalculatorTest extends WordSpec with Matchers {
     val record = Record(
       machine = "TestMachine",
       instant = instant,
+      tick = value.toLong,
       volt = value,
       pressure = value,
       rotate = value,

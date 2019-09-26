@@ -14,7 +14,7 @@ object Simulator {
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContext = system.dispatcher
 
-  implicit val kafkaonfig = EmbeddedKafkaConfig(kafkaPort = 9092, zooKeeperPort = 0)
+  implicit val kafkaConfig = EmbeddedKafkaConfig(kafkaPort = 9092, zooKeeperPort = 0)
 
   def main(args: Array[String]): Unit = {
 

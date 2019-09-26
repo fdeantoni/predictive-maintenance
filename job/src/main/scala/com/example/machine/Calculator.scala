@@ -9,6 +9,7 @@ import org.apache.spark.internal.Logging
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.dstream.DStream
 
+//noinspection DuplicatedCode
 class Calculator(modelsDir: String) extends Logging with Serializable {
 
   /**
@@ -89,8 +90,10 @@ class Calculator(modelsDir: String) extends Logging with Serializable {
         state.update(updated)
         Some(updated)
       case (Some(current), None) =>
-        state.update(current)
-        Some(current)
+        val tick = current.record.tick
+        val updated = current.copy(error1 = tick, error2 = tick, error3 = tick, error4 = tick, service1 = tick, service2 = tick, service3 = tick, service4 = tick)
+        state.update(updated)
+        Some(updated)
       case _ => None
     }
   }

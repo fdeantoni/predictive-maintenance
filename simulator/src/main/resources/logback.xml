@@ -10,8 +10,7 @@
     <logger name="kafka" level="error"/>
     <logger name="org.apache.zookeeper" level="error"/>
     <logger name="org.apache.kafka" level="error"/>
-    <logger name="com.salesforce.kafka.test" level="error"/>
-    <logger name="akka" level="info"/>
+    <logger name="akka" level="debug"/>
     <logger name="com.example" level="info"/>
 
     <root level="info">

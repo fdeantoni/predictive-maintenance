@@ -20,9 +20,9 @@ class CsvConsumer(file: String, machine: String, system: ActorSystem) {
   val flow: Flow[ByteString, Record, NotUsed] = Flow[ByteString]
     .via(CsvParsing.lineScanner())
     .via(CsvToMap.toMap())
-    .throttle(1, 1.second)
+    .throttle(1, 5.seconds)
     .map { line =>
-      //val tick = line.get("time").map(_.utf8String).map(_.toInt).getOrElse(0)
+      val tick = line.get("time").map(_.utf8String).map(_.toLong).getOrElse(0L)
       val volt = line.get("volt").map(_.utf8String).map(_.toDouble).getOrElse(0D)
       val rotate = line.get("rotate").map(_.utf8String).map(_.toDouble).getOrElse(0D)
       val pressure = line.get("pressure").map(_.utf8String).map(_.toDouble).getOrElse(0D)
@@ -38,6 +38,7 @@ class CsvConsumer(file: String, machine: String, system: ActorSystem) {
       Record(
         machine = machine,
         instant = Instant.now(),
+        tick = tick,
         volt = volt,
         pressure = pressure,
         rotate = rotate,

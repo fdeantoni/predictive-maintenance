@@ -9,6 +9,7 @@ import org.json4s.jackson.Serialization.{read, write}
 case class Record(
                    machine: String,
                    instant: Instant,
+                   tick: Long,
                    volt: Double,
                    pressure: Double,
                    rotate: Double,
