@@ -1,0 +1,10 @@
+.idea
+.gradle
+build
+logs
+/application.conf
+/spark-warehouse
+target
+/checkpoint
+/models
+/logback.xml
