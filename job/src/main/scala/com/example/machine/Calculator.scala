@@ -14,8 +14,7 @@ class Calculator(modelsDir: String) extends Logging with Serializable {
 
   /**
    * Load all the boosters from the modelsDir directory. Booster models must have a suffix of .xgboost.model,
-   * and start with the Sensor name. For example, the model for sensor /Acme/Widget/Machine746 must be called
-   * Machine746.xgboost.model.
+   * and start with the Sensor name. For example, the model for Machine746 must be called Machine746.xgboost.model.
    */
   val boosters: Map[String, Booster] = {
     val dir = new File(modelsDir)
@@ -33,7 +32,7 @@ class Calculator(modelsDir: String) extends Logging with Serializable {
   log.info(s"Loaded models from $modelsDir:\n  " + { if(boosters.isEmpty) "No models found!" else boosters.keys.mkString("  \n") })
 
   /**
-   * Process a list of SensorEvents (belonging to one sensor entity). Processing involves calculating the rolling mean
+   * Process a list of records of one machine. Processing involves calculating the rolling mean
    * and standard deviation based on the list of sensor events received.
    */
   private[machine] def process(key: String, records: Iterable[Record]): Option[(String, Calculator.Result)] = {
@@ -72,8 +71,8 @@ class Calculator(modelsDir: String) extends Logging with Serializable {
 
   /**
    * A Spark stateful calculation function that will calculate for us the "time since last" event on the error and
-   * service fields in the SensorEvent. If the value contained in the field is 0 then we increment by 1. If the value
-   * is not 0, then the event happened, and we start again with 1.
+   * service fields in the Record. If the value contained is 0 then we increment by 1. If the value is not 0, then the
+   * event happened, and we start again with 1.
    */
   private def stateFunc = (key: String, value: Option[Calculator.Result], state: State[Calculator.Result]) => {
     (value, state.getOption()) match {
@@ -113,7 +112,7 @@ class Calculator(modelsDir: String) extends Logging with Serializable {
      *  Next we map the events again based on the key (i.e. path) and then use the mapWithState function to calculate the "last time since" values
      *  for the error and service fields.
      *
-     *  The output from these calculations are then converted to Kafka value messages, which can be fed into the KafkaDStreamSink.
+     *  The output from these calculations are then stored in a copy of the original record which we can, for example, send to another Kafka topic.
      */
     stream.map { case (key, value) =>
         key -> Record.fromJson(value)
